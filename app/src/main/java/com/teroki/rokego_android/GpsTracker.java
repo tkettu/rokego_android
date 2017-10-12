@@ -23,7 +23,7 @@ public class GpsTracker extends Service implements LocationListener{
     private Context mContext;
 
     private TextView distanceField;
-    private TextView searchingField;
+    //private TextView searchingField;
     private TextView locationField;
 
 
@@ -83,10 +83,20 @@ public class GpsTracker extends Service implements LocationListener{
         */
         //getLocation();
         //Todo Check if can get location
-        oldLocation = location;
-        distanceOn = true;
+        Location location1 = getLocation();
+        if (location1 != null) {
+            oldLocation = location;
+            distanceOn = true;
+            onLocationChanged(location);
+            //searchingField.setText("FOUND SOME");
+            Log.d("Location", "Found");
+        }else{
+            //searchingField.setVisibility(View.VISIBLE);
+            //searchingField.setText("STILL LOOKING GPS");
+            Log.d("Location", "Not found");
+        }
         //searchingField.setVisibility(View.INVISIBLE);
-        onLocationChanged(location);
+
 
     }
 
@@ -131,14 +141,14 @@ public class GpsTracker extends Service implements LocationListener{
                             if (location != null) {
                                 //oldLocation = location;
                                 //distanceOn = true;
-                                searchingField.setVisibility(View.INVISIBLE);
+                                //searchingField.setVisibility(View.INVISIBLE);
                                 //onLocationChanged(location);
                                 locationField.setText(location.toString());
 
                             }else{
                                 Log.i("Location", "Location not available or searching...");
                                 //distanceField.setText("Searching location...");
-                                searchingField.setVisibility(View.VISIBLE);
+                                //searchingField.setVisibility(View.VISIBLE);
                                 locationField.setText("Location not found yet");
                             }
                         }
@@ -276,9 +286,9 @@ public class GpsTracker extends Service implements LocationListener{
         this.distanceField = distanceField;
     }
 
-    public void setSearchingField(TextView searchingField){
+   /* public void setSearchingField(TextView searchingField){
         this.searchingField = searchingField;
-    }
+    }*/
 
     public void setLocationField(TextView locationField) {
         this.locationField = locationField;

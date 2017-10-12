@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     PausableChronometer chronometer;
     TextView distance;
+    TextView searching;
 
     TextView timeLabel;
 
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
         chronometer = (PausableChronometer) findViewById(R.id.chronometer);
         distance = (TextView) findViewById(R.id.distance);
+        searching = (TextView) findViewById(R.id.location);
         setSupportActionBar(mainToolbar);
 
         // Todo set state oncreate
@@ -87,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 gps.setDistanceField((TextView) findViewById(R.id.distance));
-                gps.setSearchingField((TextView) findViewById(R.id.searchingGps));
                 gps.setLocationField((TextView) findViewById(R.id.location));
             }
         }catch (Exception e){
@@ -156,8 +157,10 @@ public class MainActivity extends AppCompatActivity {
             setButtonState(Constants.BUTTON_STATES.BTN_PAUSE);
 
             stopBtn.setVisibility(View.INVISIBLE);
-            timeLayout.setVisibility(View.VISIBLE);
-            distanceLayout.setVisibility(View.VISIBLE);
+
+            if (gps.canGetLocation()){
+                searching.setText("Location found");
+            }
 
 
         }else{
@@ -187,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
         stopIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
         startService(stopIntent);
 
-        //Todo start summarypage activity
 
         Intent saveIntent = new Intent(MainActivity.this, SaveData.class);
         TextView tDistance = (TextView) findViewById(R.id.distance);
@@ -226,9 +228,13 @@ public class MainActivity extends AppCompatActivity {
         switch (state){
             case Constants.BUTTON_STATES.BTN_START:
                 startBtn.setText(R.string.btn_start);
+                timeLayout.setVisibility(View.INVISIBLE);
+                distanceLayout.setVisibility(View.INVISIBLE);
                 break;
             case Constants.BUTTON_STATES.BTN_PAUSE:
                 startBtn.setText(R.string.btn_pause);
+                timeLayout.setVisibility(View.VISIBLE);
+                distanceLayout.setVisibility(View.VISIBLE);
                 break;
             case Constants.BUTTON_STATES.BTN_CONTINUE:
                 startBtn.setText(R.string.btn_continue);
