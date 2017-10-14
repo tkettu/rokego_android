@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         searching = (TextView) findViewById(R.id.location);
         setSupportActionBar(mainToolbar);
 
-        // Todo set state oncreate
+
         //setStateToStart();
         setButtonState(Constants.BUTTON_STATES.BTN_START);
         try{
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Todo, check Location permissions when implemented
        /* gps = new Tracker(MainActivity.this);
-
+        // Todo turn of gps when closing app and tracking not started
         gps.setChronometer((PausableChronometer) findViewById(R.id.chronometer));
         gps.setTimeLabel((TextView) findViewById(R.id.time_label));
 */

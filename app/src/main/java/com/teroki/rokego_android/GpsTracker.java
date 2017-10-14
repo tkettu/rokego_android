@@ -105,13 +105,15 @@ public class GpsTracker extends Service implements LocationListener{
             locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
             isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
+            Log.d("Gps Enabled", (isGpsEnabled ? "Yes": "No"));
+            Log.d("Network Enabled", (isNetworkEnabled ? "Yes": "No"));
             if (!isGpsEnabled && !isNetworkEnabled ){
                 //Nothing enabled
             } else{
                 this.canGetLocation = true;
                 // Location from network
                 if (isNetworkEnabled){
+                    Log.d("Network Enabled", "Network Enabled");
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                             Constants.GPS_UPDATES.MIN_TIME_BETWEEN_UPDATES,
                             Constants.GPS_UPDATES.MIN_DISTANCE_CHANGE_FOR_UPDATES,
@@ -126,17 +128,22 @@ public class GpsTracker extends Service implements LocationListener{
                     }
                 }
                 if (isGpsEnabled) {
-                    if (location == null) {
-                        locationManager.requestLocationUpdates(
+                    Log.d("GPS Enabled", "GPS Enabled");
+
+
+                    //if (location == null) {
+
+                    //}
+
+                        if (locationManager != null) {
+                            locationManager.requestLocationUpdates(
                                 LocationManager.GPS_PROVIDER,
                                 Constants.GPS_UPDATES.MIN_TIME_BETWEEN_UPDATES,
                                 Constants.GPS_UPDATES.MIN_DISTANCE_CHANGE_FOR_UPDATES,
                                 this);
-
-                        Log.d("GPS Enabled", "GPS Enabled");
-                        if (locationManager != null) {
                             location = locationManager
                                     .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            Log.d("Location", location.toString() + " Tassa");
 
                             if (location != null) {
                                 //oldLocation = location;
@@ -154,7 +161,7 @@ public class GpsTracker extends Service implements LocationListener{
                         }
                     }
                 }
-            }
+            //}
 
         }  catch (Exception e) {
             e.printStackTrace();
@@ -190,6 +197,8 @@ public class GpsTracker extends Service implements LocationListener{
             }
             // Update "global" oldLocation
             this.oldLocation = location;
+            Log.d("Old location", this.oldLocation.toString());
+            Log.d("Location", location.toString());
             distanceField.setText(String.valueOf(distance));
         }
     }
