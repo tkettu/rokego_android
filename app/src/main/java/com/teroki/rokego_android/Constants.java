@@ -9,6 +9,7 @@ public class Constants {
         public static String MAIN_ACTION = "com.teroki.rokego_android.action.main";
         public static String STARTFOREGROUND_ACTION = "com.teroki.rokego_android.action.startforeground";
         public static String STOPFOREGROUND_ACTION = "com.teroki.rokego_android.action.stopforeground";
+        public static String PAUSE_ACTION="com.teroki.rokego_android.action.pause";
     }
     public interface NOTIFICATION_ID {
         public static int FOREGROUND_SERVICE = 101;

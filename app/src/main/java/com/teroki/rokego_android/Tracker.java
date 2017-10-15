@@ -32,6 +32,7 @@ public class Tracker extends Service /*implements LocationListener */{
     private long elapsedTime;
     private double elapsedDistance;
 
+    public static String PAUSE_BROADCAST = "com.teroki.rokego_android.PAUSE_BC";
 
 
     //private PausableChronometer chronometer;
@@ -55,15 +56,23 @@ public class Tracker extends Service /*implements LocationListener */{
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+            Intent pauseIntent = new Intent(this, Tracker.class);
+            pauseIntent.setAction(Constants.ACTION.PAUSE_ACTION);
+            PendingIntent pendingPauseIntent = PendingIntent.getService(this, 0, pauseIntent, 0);
+
             //Todo Change icon
             Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.settings_icon);
 
             Notification notification = new NotificationCompat.Builder(this)
                     .setContentTitle(getText(R.string.notification_title))
                     .setTicker(getText(R.string.ticker_text))
-                    .setContentText(getText(R.string.notification_message))
+                    .setContentText(String.valueOf(elapsedTime))
+                    //.setContentText(getText(R.string.notification_message))
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setLargeIcon(icon)
                     .setContentIntent(pendingIntent)
                     .setOngoing(true)
+                    .addAction(android.R.drawable.ic_media_pause, "Pause", pendingPauseIntent)
                     .build();
 
             startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
@@ -75,6 +84,9 @@ public class Tracker extends Service /*implements LocationListener */{
             start();
 
 
+        }else if (intent.getAction().equals(Constants.ACTION.PAUSE_ACTION)){
+            pause();
+            Log.i(LOG_TAG, "Pressed pause");
         }else if (intent.getAction().equals(
                 Constants.ACTION.STOPFOREGROUND_ACTION)) {
             Log.i(LOG_TAG, "Received Stop Foreground Intent");
@@ -82,6 +94,17 @@ public class Tracker extends Service /*implements LocationListener */{
             stopSelf();
         }
         return START_STICKY;
+    }
+
+    private void pause() {
+        // Todo: Implement pause/continue
+        //Intent intent = new Intent();
+        //intent.setAction()
+        Intent intent = new Intent();
+        intent.setAction(PAUSE_BROADCAST);
+        sendBroadcast(intent);
+
+
     }
 
     public void start(){

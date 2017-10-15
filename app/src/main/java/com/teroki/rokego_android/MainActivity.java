@@ -1,8 +1,12 @@
 package com.teroki.rokego_android;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button startBtn;   //Visible on Create, pressing changes text to "pause" and starts tracking
     Button stopBtn;    //Invisible on Create, visible when pressed pause, invisible again on "continue"
+    FloatingActionButton addBtn;
     private boolean startBtnClicked = false;
 
 
@@ -50,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
     //Tracker gps;
     GpsTracker gps;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +65,14 @@ public class MainActivity extends AppCompatActivity {
         startBtn = (Button) findViewById(R.id.button_start);
         stopBtn = (Button) findViewById(R.id.button_stop);
         mainToolbar = (Toolbar) findViewById(R.id.toolbar_main);
+        addBtn = (FloatingActionButton) findViewById(R.id.fab_Add);
+        addBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, SaveData.class);
+                startActivity(intent);
+            }
+        });
 
         timeLayout = (LinearLayout) findViewById(R.id.time_layout);
         distanceLayout = (LinearLayout) findViewById(R.id.distance_layout);
@@ -146,7 +161,8 @@ public class MainActivity extends AppCompatActivity {
     public void start(View view){
 
         if (!startBtnClicked) {
-            chronometer.start();
+            continue2();
+            /*chronometer.start();
             gps.start(); // Todo, what if location permission not granted???
             Intent startIntent = new Intent(MainActivity.this, Tracker.class);
             startIntent.putExtra("elapsedTime", chronometer.getBase());
@@ -156,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
             //startBtn.setText(R.string.btn_pause);
             setButtonState(Constants.BUTTON_STATES.BTN_PAUSE);
 
-            stopBtn.setVisibility(View.INVISIBLE);
+            stopBtn.setVisibility(View.INVISIBLE);*/
 
             if (gps.canGetLocation()){
                 searching.setText("Location found");
@@ -164,21 +180,49 @@ public class MainActivity extends AppCompatActivity {
 
 
         }else{
-            chronometer.stop();
-            gps.pause();
+            pause();
+            //chronometer.stop();
+            //gps.pause();
             //Intent stopIntent = new Intent(MainActivity.this, Tracker.class);
             //stopIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
             //startService(stopIntent);
             //stopBtn.setVisibility(View.VISIBLE);
             //startBtn.setText(R.string.btn_continue);
-            setButtonState(Constants.BUTTON_STATES.BTN_CONTINUE);
+            //setButtonState(Constants.BUTTON_STATES.BTN_CONTINUE);
         }
-        startBtnClicked = !startBtnClicked;
+        //startBtnClicked = !startBtnClicked;
        /* //gps.getTimeLabel().setVisibility(View.VISIBLE);
         //gps.getChronometer().setVisibility(View.VISIBLE);
         gps.start();
         this.mainToolbar.setVisibility(View.INVISIBLE);
 */
+    }
+
+    public void continue2(){
+        chronometer.start();
+        gps.start(); // Todo, what if location permission not granted???
+        Intent startIntent = new Intent(MainActivity.this, Tracker.class);
+        startIntent.putExtra("elapsedTime", chronometer.getBase());
+        startIntent.putExtra("elapsedDistance", gps.getDistance());
+        startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
+        startService(startIntent);
+        //startBtn.setText(R.string.btn_pause);
+        setButtonState(Constants.BUTTON_STATES.BTN_PAUSE);
+
+
+
+        stopBtn.setVisibility(View.INVISIBLE);
+
+        startBtnClicked = true;
+    }
+
+    public void pause() {
+        chronometer.stop();
+        gps.pause();
+        setButtonState(Constants.BUTTON_STATES.BTN_CONTINUE);
+
+        startBtnClicked = false;
+
     }
 
     /**
@@ -221,18 +265,21 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
     /**
-     * Sets start and stop button states between 1-START, 2-PAUSE and 3-CONTINUE/STOP
+     * Sets buttons and layout states (Visibility, text) between 1-START, 2-PAUSE and 3-CONTINUE/STOP
+     * States should go from 1 -> 2 -> 3 -> 1
      * @param state
      */
     private void setButtonState(int state){
         switch (state){
             case Constants.BUTTON_STATES.BTN_START:
                 startBtn.setText(R.string.btn_start);
+                addBtn.setVisibility(View.VISIBLE);
                 timeLayout.setVisibility(View.INVISIBLE);
                 distanceLayout.setVisibility(View.INVISIBLE);
                 break;
             case Constants.BUTTON_STATES.BTN_PAUSE:
                 startBtn.setText(R.string.btn_pause);
+                addBtn.setVisibility(View.INVISIBLE);
                 timeLayout.setVisibility(View.VISIBLE);
                 distanceLayout.setVisibility(View.VISIBLE);
                 break;
@@ -256,5 +303,26 @@ public class MainActivity extends AppCompatActivity {
         stopIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
         startService(stopIntent);
         startBtn.setText("LOPETETTU JOO");
+    }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            pause();
+        }
+    };
+
+    @Override
+    protected void onResume(){
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Tracker.PAUSE_BROADCAST);
+        registerReceiver(receiver, filter);
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause(){
+        unregisterReceiver(receiver);
+        super.onPause();
     }
 }

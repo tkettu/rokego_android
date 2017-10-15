@@ -45,6 +45,7 @@ public class SaveData extends AppCompatActivity {
         Log.d("Adding: ", String.valueOf(time) + " AND " + String.valueOf(distance));
         DBHelper db = new DBHelper(this);
         //Todo Exercise name with choices
+        // http://www.androidbegin.com/tutorial/android-populating-spinner-json-tutorial/
         // Todo date
         date = System.currentTimeMillis();
         if( distance == null || time == null){
