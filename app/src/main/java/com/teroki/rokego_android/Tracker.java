@@ -3,20 +3,15 @@ package com.teroki.rokego_android;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Location;
-import android.location.LocationListener;
-import android.os.Bundle;
 import android.os.IBinder;
 
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.TextView;
 
-import com.teroki.rokego_helpers.PausableChronometer;
 
 
 /**
@@ -34,12 +29,8 @@ public class Tracker extends Service /*implements LocationListener */{
 
     public static String PAUSE_BROADCAST = "com.teroki.rokego_android.PAUSE_BC";
 
-
-    //private PausableChronometer chronometer;
-    //private TextView timeLabel;
-
     public Tracker(){
-       // mContext = null;
+
     }
 
     /*public Tracker(Context mContext) {
@@ -50,15 +41,20 @@ public class Tracker extends Service /*implements LocationListener */{
     public int onStartCommand(Intent intent, int flags, int startId) {
         //return super.onStartCommand(intent, flags, startId);
         if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)){
+
+            //createListener();
+
             Log.i(LOG_TAG, "Received foreground Intent ");
             Intent notificationIntent = new Intent(this, MainActivity.class);
             notificationIntent.setAction(Constants.ACTION.MAIN_ACTION);
-            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+           // notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             Intent pauseIntent = new Intent(this, Tracker.class);
             pauseIntent.setAction(Constants.ACTION.PAUSE_ACTION);
             PendingIntent pendingPauseIntent = PendingIntent.getService(this, 0, pauseIntent, 0);
+
 
             //Todo Change icon
             Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.settings_icon);
@@ -84,7 +80,11 @@ public class Tracker extends Service /*implements LocationListener */{
             start();
 
 
-        }else if (intent.getAction().equals(Constants.ACTION.PAUSE_ACTION)){
+        }else if(intent.getAction().equals(Constants.ACTION.MAIN_ACTION)){
+            //return to app
+            Log.d("Returning", "to app");
+        }
+        else if (intent.getAction().equals(Constants.ACTION.PAUSE_ACTION)){
             pause();
             Log.i(LOG_TAG, "Pressed pause");
         }else if (intent.getAction().equals(
@@ -96,36 +96,22 @@ public class Tracker extends Service /*implements LocationListener */{
         return START_STICKY;
     }
 
+
     private void pause() {
         // Todo: Implement pause/continue
+        // Todo: pause functioning when mainactivity stopped (minimized)
         //Intent intent = new Intent();
         //intent.setAction()
+
+
         Intent intent = new Intent();
         intent.setAction(PAUSE_BROADCAST);
         sendBroadcast(intent);
-
+        Log.d(LOG_TAG, "pause");
 
     }
 
     public void start(){
-
-
-
-        /*Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-
-        Notification notification = new NotificationCompat.Builder(this)
-                .setContentTitle(getText(R.string.notification_title))
-                .setContentText(getText(R.string.notification_message))
-                .setSmallIcon(R.drawable.settings_icon)
-                .setContentIntent(pendingIntent)
-                .setTicker(getText(R.string.ticker_text))
-                .build();
-
-        startForeground(ONGOING_NOTIFICATION_ID, notification);*/
-        // Todo StartForeground
-
-
 
     }
 

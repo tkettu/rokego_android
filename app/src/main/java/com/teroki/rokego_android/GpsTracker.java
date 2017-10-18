@@ -47,11 +47,13 @@ public class GpsTracker extends Service implements LocationListener{
     // Distance tracking on/off
     private boolean distanceOn = false;
 
+    public boolean trackingStarted = false;
+
     public GpsTracker() {
     }
 
     public GpsTracker(Context mContext){
-
+        trackingStarted = false;
         this.mContext = mContext;
         getLocation();
     }
@@ -84,6 +86,7 @@ public class GpsTracker extends Service implements LocationListener{
         //getLocation();
         //Todo Check if can get location
         Location location1 = getLocation();
+        trackingStarted = true;
         if (location1 != null) {
             oldLocation = location;
             distanceOn = true;
@@ -179,6 +182,13 @@ public class GpsTracker extends Service implements LocationListener{
     }
 
     @Override
+    public void onDestroy() {
+        //locationManager.removeUpdates();
+        super.onDestroy();
+        stopLocationUpdates();
+    }
+
+    @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
@@ -200,6 +210,18 @@ public class GpsTracker extends Service implements LocationListener{
             Log.d("Old location", this.oldLocation.toString());
             Log.d("Location", location.toString());
             distanceField.setText(String.valueOf(distance));
+        }
+    }
+
+    /**
+     * Stops using gps on device
+     */
+    public void stopLocationUpdates(){
+        if (locationManager != null){
+            locationManager.removeUpdates(GpsTracker.this);
+            Log.d("Removing updates", "Gps closed");
+        }else{
+            Log.d("Removing updates", "Location manager Null");
         }
     }
 

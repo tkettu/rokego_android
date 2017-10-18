@@ -26,7 +26,7 @@ import com.teroki.rokego_helpers.NumericChecker;
 import com.teroki.rokego_helpers.PausableChronometer;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     //Permissions
     String mPermissionFL = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -52,9 +52,12 @@ public class MainActivity extends AppCompatActivity {
 
     TextView timeLabel;
 
-    //Tracker gps;
+    //Tracker foreGroundTracker;
     GpsTracker gps;
+    private String LIFECYCLE_TAG = "Acitivity cycle:";
+    private static final String LOG_TAG = "Main Activity";
 
+    public static boolean active = false;
 
 
     @Override
@@ -105,23 +108,20 @@ public class MainActivity extends AppCompatActivity {
 
                 gps.setDistanceField((TextView) findViewById(R.id.distance));
                 gps.setLocationField((TextView) findViewById(R.id.location));
+                gps.trackingStarted = false;
             }
         }catch (Exception e){
 
         }
 
+
+
         // Todo, check Location permissions when implemented
        /* gps = new Tracker(MainActivity.this);
         // Todo turn of gps when closing app and tracking not started
-        gps.setChronometer((PausableChronometer) findViewById(R.id.chronometer));
-        gps.setTimeLabel((TextView) findViewById(R.id.time_label));
+
 */
     }
-
-   /* private void setStateToStart() {
-        stopBtn.setVisibility(View.INVISIBLE);
-        set
-    }*/
 
 
     @Override
@@ -164,15 +164,7 @@ public class MainActivity extends AppCompatActivity {
             continue2();
             /*chronometer.start();
             gps.start(); // Todo, what if location permission not granted???
-            Intent startIntent = new Intent(MainActivity.this, Tracker.class);
-            startIntent.putExtra("elapsedTime", chronometer.getBase());
-            startIntent.putExtra("elapsedDistance", gps.getDistance());
-            startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
-            startService(startIntent);
-            //startBtn.setText(R.string.btn_pause);
-            setButtonState(Constants.BUTTON_STATES.BTN_PAUSE);
-
-            stopBtn.setVisibility(View.INVISIBLE);*/
+            */
 
             if (gps.canGetLocation()){
                 searching.setText("Location found");
@@ -181,27 +173,19 @@ public class MainActivity extends AppCompatActivity {
 
         }else{
             pause();
-            //chronometer.stop();
-            //gps.pause();
-            //Intent stopIntent = new Intent(MainActivity.this, Tracker.class);
-            //stopIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
-            //startService(stopIntent);
-            //stopBtn.setVisibility(View.VISIBLE);
-            //startBtn.setText(R.string.btn_continue);
-            //setButtonState(Constants.BUTTON_STATES.BTN_CONTINUE);
+
         }
-        //startBtnClicked = !startBtnClicked;
-       /* //gps.getTimeLabel().setVisibility(View.VISIBLE);
-        //gps.getChronometer().setVisibility(View.VISIBLE);
-        gps.start();
-        this.mainToolbar.setVisibility(View.INVISIBLE);
-*/
+
     }
 
     public void continue2(){
+
+
+
         chronometer.start();
         gps.start(); // Todo, what if location permission not granted???
         Intent startIntent = new Intent(MainActivity.this, Tracker.class);
+
         startIntent.putExtra("elapsedTime", chronometer.getBase());
         startIntent.putExtra("elapsedDistance", gps.getDistance());
         startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
@@ -230,10 +214,8 @@ public class MainActivity extends AppCompatActivity {
      */
     public void stop(View view){
 
-        Intent stopIntent = new Intent(MainActivity.this, Tracker.class);
-        stopIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
-        startService(stopIntent);
 
+        stopForeground();
 
         Intent saveIntent = new Intent(MainActivity.this, SaveData.class);
         TextView tDistance = (TextView) findViewById(R.id.distance);
@@ -248,21 +230,28 @@ public class MainActivity extends AppCompatActivity {
         saveIntent.putExtra(DISTANCE_MSG, mDistance);
         startActivity(saveIntent);
 
+
         //reset distance
-        gps.setDistance(0.0);
-        gps.onDestroy();
+        resetGps();
+        //gps.onDestroy();
 
         chronometer.reset();
         //setStartButton(false);
         setButtonState(Constants.BUTTON_STATES.BTN_START);
     }
 
-    /*private void setStartButton(boolean b) {
+    public void stopForeground(){
+        Intent stopIntent = new Intent(MainActivity.this, Tracker.class);
+        stopIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
+        startService(stopIntent);
+    }
 
-        startBtnClicked = b;
-        startBtn.setText((b ? R.string.btn_pause : R.string.btn_start));
-        stopBtn.setVisibility((b ? View.INVISIBLE: View.VISIBLE));
-    }*/
+    private void resetGps(){
+        gps.setDistance(0.0);
+        gps.stopLocationUpdates();
+        gps.trackingStarted = false;
+    }
+
 
     /**
      * Sets buttons and layout states (Visibility, text) between 1-START, 2-PAUSE and 3-CONTINUE/STOP
@@ -308,13 +297,18 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.d(LOG_TAG, "BroadcastReceiver");
             pause();
         }
     };
 
     @Override
     protected void onResume(){
+
+        active = true;
+
         IntentFilter filter = new IntentFilter();
+        Log.d(LOG_TAG, "OnResume");
         filter.addAction(Tracker.PAUSE_BROADCAST);
         registerReceiver(receiver, filter);
         super.onResume();
@@ -322,7 +316,51 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause(){
+
+        active = false;
+
         unregisterReceiver(receiver);
+
+        Log.d(LOG_TAG, "MainActivity paused");
+        if (!gps.trackingStarted){
+            Log.d(LIFECYCLE_TAG, "Stopping updates");
+            gps.stopLocationUpdates();
+            gps.onDestroy();
+            stopForeground();  // Todo this should not be even started if tracking not started
+
+        }
         super.onPause();
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(LIFECYCLE_TAG, "Main activity stopping");
+        super.onStop();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        // If track started, it should continue at background; otherwise close app with back pressed
+        // on main page
+        if (!gps.trackingStarted){
+            finish();
+        }
+        minimizeApp();
+
+
+    }
+
+    public void minimizeApp(){
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        startActivity(startMain);
     }
 }
