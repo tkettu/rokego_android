@@ -15,7 +15,8 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleInstance">
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,8 +32,8 @@
         <service
             android:name=".GpsTracker"
             android:enabled="true"
-            android:exported="true"
-            />
+            android:exported="true" />
+
 
         <activity android:name=".SaveData" />
         <activity
@@ -50,6 +51,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.teroki.rokego_android.MainActivity" />
         </activity>
+
+        <service
+            android:name=".ForeGroundService"
+            android:enabled="true"
+            android:exported="true"/>
     </application>
 
 </manifest>

@@ -52,18 +52,24 @@ public class MainActivity extends AppCompatActivity{
 
     TextView timeLabel;
 
-    //Tracker foreGroundTracker;
+
     GpsTracker gps;
+    Tracker tracker;
     private String LIFECYCLE_TAG = "Acitivity cycle:";
     private static final String LOG_TAG = "Main Activity";
 
     public static boolean active = false;
 
+    //Broadcast receiver
+    MessageReceiver receiver = null;
+    Boolean receiverRegistered = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        receiver = new MessageReceiver();
 
         startBtn = (Button) findViewById(R.id.button_start);
         stopBtn = (Button) findViewById(R.id.button_stop);
@@ -109,12 +115,15 @@ public class MainActivity extends AppCompatActivity{
                 gps.setDistanceField((TextView) findViewById(R.id.distance));
                 gps.setLocationField((TextView) findViewById(R.id.location));
                 gps.trackingStarted = false;
+
+
             }
         }catch (Exception e){
 
         }
 
-
+        Log.d(LOG_TAG, "Creating " + chronometer.toString() + " and " + gps.toString());
+        tracker = new Tracker(this, chronometer, gps);
 
         // Todo, check Location permissions when implemented
        /* gps = new Tracker(MainActivity.this);
@@ -166,9 +175,9 @@ public class MainActivity extends AppCompatActivity{
             gps.start(); // Todo, what if location permission not granted???
             */
 
-            if (gps.canGetLocation()){
-                searching.setText("Location found");
-            }
+            //if (gps.canGetLocation()){
+            //    searching.setText("Location found");
+            //}
 
 
         }else{
@@ -182,9 +191,10 @@ public class MainActivity extends AppCompatActivity{
 
 
 
-        chronometer.start();
-        gps.start(); // Todo, what if location permission not granted???
-        Intent startIntent = new Intent(MainActivity.this, Tracker.class);
+        //chronometer.start();
+        //gps.start(); // Todo, what if location permission not granted???
+        Intent startIntent = new Intent(MainActivity.this, ForeGroundService.class);
+
 
         startIntent.putExtra("elapsedTime", chronometer.getBase());
         startIntent.putExtra("elapsedDistance", gps.getDistance());
@@ -193,7 +203,7 @@ public class MainActivity extends AppCompatActivity{
         //startBtn.setText(R.string.btn_pause);
         setButtonState(Constants.BUTTON_STATES.BTN_PAUSE);
 
-
+        tracker.start();
 
         stopBtn.setVisibility(View.INVISIBLE);
 
@@ -201,8 +211,9 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void pause() {
-        chronometer.stop();
-        gps.pause();
+        //chronometer.stop();
+        //gps.pause();
+        tracker.pause();
         setButtonState(Constants.BUTTON_STATES.BTN_CONTINUE);
 
         startBtnClicked = false;
@@ -241,7 +252,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void stopForeground(){
-        Intent stopIntent = new Intent(MainActivity.this, Tracker.class);
+        Intent stopIntent = new Intent(MainActivity.this, ForeGroundService.class);
         stopIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
         startService(stopIntent);
     }
@@ -294,23 +305,28 @@ public class MainActivity extends AppCompatActivity{
         startBtn.setText("LOPETETTU JOO");
     }
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    /*private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(LOG_TAG, "BroadcastReceiver");
             pause();
         }
-    };
+    };*/
 
     @Override
     protected void onResume(){
-
-        active = true;
-
-        IntentFilter filter = new IntentFilter();
         Log.d(LOG_TAG, "OnResume");
-        filter.addAction(Tracker.PAUSE_BROADCAST);
-        registerReceiver(receiver, filter);
+        active = true;
+        if(!receiverRegistered){
+            IntentFilter filter = new IntentFilter();
+
+            Log.d(LOG_TAG, "OnResume Pause");
+
+            filter.addAction(Tracker.PAUSE_BROADCAST);
+            registerReceiver(receiver, filter);
+            receiverRegistered = true;
+        }
+
         super.onResume();
     }
 
@@ -318,10 +334,13 @@ public class MainActivity extends AppCompatActivity{
     protected void onPause(){
 
         active = false;
-
-        unregisterReceiver(receiver);
-
         Log.d(LOG_TAG, "MainActivity paused");
+
+        if(receiverRegistered){
+            unregisterReceiver(receiver);
+            receiverRegistered = false;
+        }
+
         if (!gps.trackingStarted){
             Log.d(LIFECYCLE_TAG, "Stopping updates");
             gps.stopLocationUpdates();
@@ -348,6 +367,8 @@ public class MainActivity extends AppCompatActivity{
     public void onBackPressed() {
         // If track started, it should continue at background; otherwise close app with back pressed
         // on main page
+        resetGps();
+        //stopForeground();
         if (!gps.trackingStarted){
             finish();
         }
@@ -362,5 +383,17 @@ public class MainActivity extends AppCompatActivity{
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         startActivity(startMain);
+    }
+
+    public class MessageReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(LOG_TAG, "Message received");
+            String action = intent.getAction();
+            if(action.equals(Constants.BROADCAST.PAUSE_BC)){
+                pause();
+            }
+        }
     }
 }

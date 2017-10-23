@@ -88,9 +88,9 @@ public class GpsTracker extends Service implements LocationListener{
         Location location1 = getLocation();
         trackingStarted = true;
         if (location1 != null) {
-            oldLocation = location;
+            oldLocation = location1;
             distanceOn = true;
-            onLocationChanged(location);
+            onLocationChanged(location1);
             //searchingField.setText("FOUND SOME");
             Log.d("Location", "Found");
         }else{

@@ -11,6 +11,11 @@ public class Constants {
         public static String STOPFOREGROUND_ACTION = "com.teroki.rokego_android.action.stopforeground";
         public static String PAUSE_ACTION="com.teroki.rokego_android.action.pause";
     }
+
+    public interface BROADCAST {
+        public  static String PAUSE_BC = "com.teroki.rokego_android.PAUSE_BC";
+    }
+
     public interface NOTIFICATION_ID {
         public static int FOREGROUND_SERVICE = 101;
     }
