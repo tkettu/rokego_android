@@ -166,7 +166,28 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
     }
 
     private ArrayList<String> getSportsType(String name){
-        return null;
+        String jo = loadSports("sports.json");
+        ArrayList<String> sportsTypes = new ArrayList<>();
+        try{
+            JSONObject jsonObject = new JSONObject(jo);
+
+             sportsTypes = new ArrayList<>();
+            String s = jsonObject.getString(name);
+            String[] types = s.split(",");
+            for (String si : types){
+                String sir = si.replace("[","").replace("]","").replace("\"","");
+                sportsTypes.add(sir);
+            }
+            sportsTypes.add(0, name);
+            //sportsTypes = (ArrayList<String>) jsonObject.getString(name).split(",");
+
+        }catch (JSONException je){
+            je.printStackTrace();
+        }
+
+
+        return sportsTypes;
+
     }
 
     @Override
@@ -175,6 +196,27 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
         this.name = sName;
         try {
             Log.d(LOG_TAG, jsonObject.getString(sName));
+            ArrayList<String> st = getSportsType(sName);
+
+            ArrayAdapter<String> stype_adapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_spinner_item, st);
+            sportsType.setAdapter(stype_adapter);
+            sportsType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+                {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    String mName = adapterView.getItemAtPosition(i).toString();
+                    if (mName != ""){
+                        Log.d(LOG_TAG, "Name is " + mName);
+                        name = mName;
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
 
         } catch (JSONException e) {
             e.printStackTrace();
