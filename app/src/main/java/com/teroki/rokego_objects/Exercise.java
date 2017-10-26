@@ -77,5 +77,18 @@ public class Exercise {
         return dateHelper.getDate(get_date());
     }
 
+    public double timeToHours(){
+        String[] t = _time.split(":"); // h:min:secs to [h][min][secs]
+        double tt = 0.0;
+        if (t.length == 1){
+            tt = Double.parseDouble(t[0])/(60 *60);
+        }else if(t.length == 2){
+            tt = Double.parseDouble(t[1])/(60 *60) + Double.parseDouble(t[0])/60;
+        }else {
+            tt = Double.parseDouble(t[2])/(60 *60) + Double.parseDouble(t[1])/60 + Double.parseDouble(t[0]);
+        }
+        return Math.round(tt * 1000d) / 1000d;
+    }
+
 
 }
