@@ -45,7 +45,13 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
         //Todo check if distance is not number (Seaching location .. etc.)
 
         distance = intent.getStringExtra(MainActivity.DISTANCE_MSG);
+        if (distance ==""){
+            distance = "0,0";
+        }
         time = intent.getStringExtra(MainActivity.TIME_MSG);
+        if (time == ""){
+            time = "0:0";
+        }
         Log.d("Sport: ", String.valueOf(time) + " AND " + String.valueOf(distance));
 
         eTime = (EditText) findViewById(R.id.time_edit);
@@ -75,7 +81,7 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
     public void saveDataToDB(View view){
         Log.d("Adding: ", String.valueOf(time) + " AND " + String.valueOf(distance));
         DBHelper db = new DBHelper(this);
-
+        //Todo time = getEditetext ja Distance sama, then check if empty/null
         // Todo date
 
         if (name != ""){
@@ -84,8 +90,21 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
             name = "Running";
         }
 
+        double sDistance;
+        try {
+             sDistance = Double.parseDouble(eDist.getText().toString());
+        }catch (NumberFormatException ne){
+            sDistance = 0.0;
+        }
+        String sTime = eTime.getText().toString();
+        sTime = (sTime != null ? sTime : "0:0");
+
         date = System.currentTimeMillis();
-        if( distance == null || time == null){
+
+        Exercise exercise = new Exercise(name, sDistance, sTime, date);
+        db.addExercise(exercise);
+
+       /* if( distance == null || time == null){
             db.addExercise(new Exercise(name, 0.0, "0:0", date));
         }
         else{
@@ -99,7 +118,7 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
 
             db.addExercise(exercise);
         }
-
+*/
 
         Log.d("Exercises","All exercises..");
         List<Exercise> exercises = db.getExercises();

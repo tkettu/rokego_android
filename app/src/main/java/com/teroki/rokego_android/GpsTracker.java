@@ -40,6 +40,8 @@ public class GpsTracker extends Service implements LocationListener{
     boolean isNetworkEnabled = false;
     boolean canGetLocation = false;
 
+    private String LOG_TAG = "GPS Tracker";
+
 
 
     private double distance = 0.0;
@@ -53,7 +55,7 @@ public class GpsTracker extends Service implements LocationListener{
     }
 
     public GpsTracker(Context mContext){
-        trackingStarted = false;
+        this.trackingStarted = false;
         this.mContext = mContext;
         getLocation();
     }
@@ -86,7 +88,7 @@ public class GpsTracker extends Service implements LocationListener{
         //getLocation();
         //Todo Check if can get location
         Location location1 = getLocation();
-        trackingStarted = true;
+        this.trackingStarted = true;
         if (location1 != null) {
             oldLocation = location1;
             distanceOn = true;
@@ -115,21 +117,7 @@ public class GpsTracker extends Service implements LocationListener{
             } else{
                 this.canGetLocation = true;
                 // Location from network
-                if (isNetworkEnabled){
-                    Log.d("Network Enabled", "Network Enabled");
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                            Constants.GPS_UPDATES.MIN_TIME_BETWEEN_UPDATES,
-                            Constants.GPS_UPDATES.MIN_DISTANCE_CHANGE_FOR_UPDATES,
-                            this);
 
-                    if (locationManager != null){
-                        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-                        /*if (location != null) {
-
-                        }*/
-                    }
-                }
                 if (isGpsEnabled) {
                     Log.d("GPS Enabled", "GPS Enabled");
 
@@ -162,7 +150,21 @@ public class GpsTracker extends Service implements LocationListener{
                                 locationField.setText("Location not found yet");
                             }
                         }
+                    }else if (isNetworkEnabled){
+                    Log.d("Network Enabled", "Network Enabled");
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                            Constants.GPS_UPDATES.MIN_TIME_BETWEEN_UPDATES,
+                            Constants.GPS_UPDATES.MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                            this);
+
+                    if (locationManager != null){
+                        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+                        /*if (location != null) {
+
+                        }*/
                     }
+                }
                 }
             //}
 
@@ -204,6 +206,7 @@ public class GpsTracker extends Service implements LocationListener{
         if (distanceOn){
             if (oldLocation != location){
                 distance += location.distanceTo(oldLocation);
+                Log.d(LOG_TAG, "Distance bw " + String.valueOf(location.distanceTo(oldLocation)));
             }
             // Update "global" oldLocation
             this.oldLocation = location;

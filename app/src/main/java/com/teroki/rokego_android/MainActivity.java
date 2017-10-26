@@ -367,9 +367,10 @@ public class MainActivity extends AppCompatActivity{
     public void onBackPressed() {
         // If track started, it should continue at background; otherwise close app with back pressed
         // on main page
-        resetGps();
+
         //stopForeground();
         if (!gps.trackingStarted){
+            resetGps();
             finish();
         }
         minimizeApp();

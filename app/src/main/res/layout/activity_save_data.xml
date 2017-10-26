@@ -22,8 +22,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="@string/label_distance"
+        android:inputType="numberDecimal"
+
+        android:text= "0,0"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="8dp"
         app:layout_constraintLeft_toRightOf="@+id/distance_send"
@@ -46,8 +47,8 @@
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="@string/label_time"
+        android:inputType="datetime"
+        android:text="0:0"
         app:layout_constraintLeft_toRightOf="@+id/time_send"
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@+id/distance_edit" />
