@@ -78,17 +78,18 @@ public class MainActivity extends AppCompatActivity{
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, SaveData.class);
-                startActivity(intent);
+                //Intent intent = new Intent(MainActivity.this, SaveData.class);
+                //startActivity(intent);
+                addExercise();
             }
         });
 
-        timeLayout = (LinearLayout) findViewById(R.id.time_layout);
-        distanceLayout = (LinearLayout) findViewById(R.id.distance_layout);
+       // timeLayout = (LinearLayout) findViewById(R.id.time_layout);
+       // distanceLayout = (LinearLayout) findViewById(R.id.distance_layout);
 
         chronometer = (PausableChronometer) findViewById(R.id.chronometer);
         distance = (TextView) findViewById(R.id.distance);
-        searching = (TextView) findViewById(R.id.location);
+        //searching = (TextView) findViewById(R.id.location);
         setSupportActionBar(mainToolbar);
 
 
@@ -113,7 +114,7 @@ public class MainActivity extends AppCompatActivity{
                 }
 
                 gps.setDistanceField((TextView) findViewById(R.id.distance));
-                gps.setLocationField((TextView) findViewById(R.id.location));
+                //gps.setLocationField((TextView) findViewById(R.id.location));
                 gps.trackingStarted = false;
 
 
@@ -228,6 +229,31 @@ public class MainActivity extends AppCompatActivity{
 
         stopForeground();
 
+        addExercise();
+       /* Intent saveIntent = new Intent(MainActivity.this, SaveData.class);
+        TextView tDistance = (TextView) findViewById(R.id.distance);
+        PausableChronometer tTime = (PausableChronometer) findViewById(R.id.chronometer);
+
+        String mDistance = tDistance.getText().toString();
+        NumericChecker nChecker = new NumericChecker();
+        mDistance = (nChecker.isNumeric(mDistance) ? mDistance: "0.0" );
+
+        String mTime = tTime.getText().toString();
+        saveIntent.putExtra(TIME_MSG, mTime);
+        saveIntent.putExtra(DISTANCE_MSG, mDistance);
+        startActivity(saveIntent);*/
+
+
+        //reset distance
+        resetGps();
+        //gps.onDestroy();
+
+        chronometer.reset();
+        //setStartButton(false);
+        setButtonState(Constants.BUTTON_STATES.BTN_START);
+    }
+
+    public void addExercise(){
         Intent saveIntent = new Intent(MainActivity.this, SaveData.class);
         TextView tDistance = (TextView) findViewById(R.id.distance);
         PausableChronometer tTime = (PausableChronometer) findViewById(R.id.chronometer);
@@ -240,15 +266,6 @@ public class MainActivity extends AppCompatActivity{
         saveIntent.putExtra(TIME_MSG, mTime);
         saveIntent.putExtra(DISTANCE_MSG, mDistance);
         startActivity(saveIntent);
-
-
-        //reset distance
-        resetGps();
-        //gps.onDestroy();
-
-        chronometer.reset();
-        //setStartButton(false);
-        setButtonState(Constants.BUTTON_STATES.BTN_START);
     }
 
     public void stopForeground(){
@@ -274,14 +291,14 @@ public class MainActivity extends AppCompatActivity{
             case Constants.BUTTON_STATES.BTN_START:
                 startBtn.setText(R.string.btn_start);
                 addBtn.setVisibility(View.VISIBLE);
-                timeLayout.setVisibility(View.INVISIBLE);
-                distanceLayout.setVisibility(View.INVISIBLE);
+                //timeLayout.setVisibility(View.INVISIBLE);
+                //distanceLayout.setVisibility(View.INVISIBLE);
                 break;
             case Constants.BUTTON_STATES.BTN_PAUSE:
                 startBtn.setText(R.string.btn_pause);
                 addBtn.setVisibility(View.INVISIBLE);
-                timeLayout.setVisibility(View.VISIBLE);
-                distanceLayout.setVisibility(View.VISIBLE);
+                //timeLayout.setVisibility(View.VISIBLE);
+                //distanceLayout.setVisibility(View.VISIBLE);
                 break;
             case Constants.BUTTON_STATES.BTN_CONTINUE:
                 startBtn.setText(R.string.btn_continue);
@@ -302,7 +319,7 @@ public class MainActivity extends AppCompatActivity{
         Intent stopIntent = new Intent(MainActivity.this, Tracker.class);
         stopIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
         startService(stopIntent);
-        startBtn.setText("LOPETETTU JOO");
+        startBtn.setText("STOPPPED TEST");
     }
 
     /*private BroadcastReceiver receiver = new BroadcastReceiver() {

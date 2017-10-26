@@ -212,7 +212,9 @@ public class GpsTracker extends Service implements LocationListener{
             this.oldLocation = location;
             Log.d("Old location", this.oldLocation.toString());
             Log.d("Location", location.toString());
-            distanceField.setText(String.valueOf(distance));
+            double rDistance = (double)Math.round((distance/1000) * 100d ) / 100d; //distance as 2 decimal kms
+            //Todo Check if this works
+            distanceField.setText(String.valueOf(rDistance));
         }
     }
 
