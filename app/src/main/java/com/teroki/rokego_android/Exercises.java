@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.teroki.rokego_db.DBHelper;
 import com.teroki.rokego_objects.Exercise;
@@ -21,8 +22,12 @@ import java.util.List;
 
 public class Exercises extends Activity /* extends ListActivity */{
 
-    ListView exercises;
+    private ListView exercises;
+    private TextView totalTime;
+    private TextView totalDistance;
     //private DBHelper db;
+
+    //Todo totalDistance and time layouts and exerciseList to table?
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +35,10 @@ public class Exercises extends Activity /* extends ListActivity */{
         setContentView(R.layout.activity_exercises);
 
 
+        totalTime = findViewById(R.id.textView_totalTime);
+        totalDistance = findViewById(R.id.textView_totalDistance);
         exercises = findViewById(R.id.list);
+
         DBHelper db = new DBHelper(this);
 
         //Log.d("Harjoitusksia ", String.valueOf( db.countExercises()));
@@ -49,8 +57,37 @@ public class Exercises extends Activity /* extends ListActivity */{
 
         exercises.setAdapter(adapter);
 
+        List<Exercise> exesE = db.getExercises();
+
+        setTotalTime(exesE);
+        setTotalDistance(exesE);
+
         //exercises = (ListView) findViewById();
         //exercises.setAdapter();
+    }
+
+    private void setTotalTime(List<Exercise> exesE) {
+
+        double tt = 0.0;
+
+        for (Exercise e: exesE){
+            double ut = e.timeToHours();
+            tt += ut;
+        }
+
+        totalTime.setText(String.valueOf(tt));
+
+    }
+
+    private void setTotalDistance(List<Exercise> exesE){
+        double td = 0.0;
+
+        for (Exercise e: exesE){
+            double ud = e.get_distance();
+            td += ud;
+        }
+
+        totalDistance.setText(String.valueOf(Math.round(td * 1000d) / 1000d));
     }
 
     @Override
