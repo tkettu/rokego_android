@@ -48,6 +48,7 @@ public class DateHelper {
         int mm = (int)Math.round(remainder * 60); //Hole minutes rounded by seconds
 
 
-        return String.valueOf(h) + ":" + String.valueOf(mm);
+
+        return String.valueOf(h) + ":" + (mm>10 ? String.valueOf(mm) : "0" + String.valueOf(mm));
     }
 }

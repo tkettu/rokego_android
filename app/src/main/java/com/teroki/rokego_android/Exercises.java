@@ -79,7 +79,7 @@ public class Exercises extends Activity /* extends ListActivity */{
             tt += ut;
         }
 
-        totalTime.setText("Time: " + dateHelper.hoursToTime(tt) );
+        totalTime.setText(dateHelper.hoursToTime(tt) );
 
     }
 
@@ -91,7 +91,7 @@ public class Exercises extends Activity /* extends ListActivity */{
             td += ud;
         }
 
-        totalDistance.setText(String.valueOf(Math.round(td * 1000d) / 1000d) + " km.");
+        totalDistance.setText(String.valueOf(Math.round(td * 1000d) / 1000d));
     }
 
     @Override
