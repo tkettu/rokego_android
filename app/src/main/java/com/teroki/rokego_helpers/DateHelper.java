@@ -33,4 +33,21 @@ public class DateHelper {
         calendar.setTimeInMillis(milliseconds);
         return formatter.format(calendar.getTime());
     }
+
+
+    /**
+     * Changes hours (h.hhh) to hh:mm(:ss)
+     * @param hours As decimal hours
+     * @return Time as readable format
+     */
+    public String hoursToTime(double hours){
+        //String time = "0:0";
+        int h = (int) hours; // Hole hours
+
+        double remainder = (hours - (double)h); //remainder of hours
+        int mm = (int)Math.round(remainder * 60); //Hole minutes rounded by seconds
+
+
+        return String.valueOf(h) + ":" + String.valueOf(mm);
+    }
 }

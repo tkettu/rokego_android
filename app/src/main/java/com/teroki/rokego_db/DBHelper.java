@@ -100,6 +100,53 @@ public class DBHelper extends SQLiteOpenHelper {
         return exerciseList;
     }
 
+    /**
+     * Returns filtered Exercise list
+     * @param name Names of the sports to show
+     * @param sDate Start date of sports
+     * @param eDate End date
+     * @param minDist Minimum distance
+     * @param maxDist Maximum distance
+     * @param minTime Minimum time as hh:mm:ss
+     * @param maxTime maximum time as hh:mm:ss
+     * @return
+     */
+    public List<Exercise> getExercises(String[] name, String sDate, String eDate,
+                                       double minDist, double maxDist,
+                                       String minTime, String maxTime){
+
+
+
+        String selectQuery = "SELECT * FROM " + SPORTS_TABLE_NAME + " WHERE " +
+                SPORTS_TABLE_NAME + " = " + name[0]  + ";";
+
+        return getExercisesFromQuery(selectQuery);
+        //return null;
+    }
+
+    private List<Exercise> getExercisesFromQuery(String selectQuery) {
+        List<Exercise> exerciseList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if(cursor.moveToFirst()){
+            do {
+                Exercise exercise = new Exercise();
+                exercise.set_id(Integer.parseInt(cursor.getString(0)));
+                exercise.set_name(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_NAME)));
+                exercise.set_distance(Double.parseDouble(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_DISTANCE))));
+                exercise.set_time(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_TIME)));
+                exercise.set_date(Long.parseLong(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_DATE))));
+
+                exerciseList.add(exercise);
+            }while(cursor.moveToNext());
+        }
+
+        return exerciseList;
+
+    }
+
     public List<String> exerciseList(){
         List<Exercise> exes = getExercises();
         List<String> sExes = new ArrayList<>();
@@ -122,6 +169,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return count;
     }
+
+    //Todo sort list
 
     public int updateExercise(Exercise exercise){return 0;}
 

@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.teroki.rokego_db.DBHelper;
+import com.teroki.rokego_helpers.DateHelper;
 import com.teroki.rokego_objects.Exercise;
 
 import java.util.List;
@@ -27,6 +28,8 @@ public class Exercises extends Activity /* extends ListActivity */{
     private TextView totalDistance;
     //private DBHelper db;
 
+    private DateHelper dateHelper;
+
     //Todo totalDistance and time layouts and exerciseList to table?
 
     @Override
@@ -34,6 +37,7 @@ public class Exercises extends Activity /* extends ListActivity */{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercises);
 
+        dateHelper = new DateHelper();
 
         totalTime = findViewById(R.id.textView_totalTime);
         totalDistance = findViewById(R.id.textView_totalDistance);
@@ -75,7 +79,7 @@ public class Exercises extends Activity /* extends ListActivity */{
             tt += ut;
         }
 
-        totalTime.setText(String.valueOf(tt));
+        totalTime.setText("Time: " + dateHelper.hoursToTime(tt) );
 
     }
 
@@ -87,7 +91,7 @@ public class Exercises extends Activity /* extends ListActivity */{
             td += ud;
         }
 
-        totalDistance.setText(String.valueOf(Math.round(td * 1000d) / 1000d));
+        totalDistance.setText(String.valueOf(Math.round(td * 1000d) / 1000d) + " km.");
     }
 
     @Override
