@@ -78,7 +78,8 @@ public class DBHelper extends SQLiteOpenHelper {
     public List<Exercise> getExercises(){
         List<Exercise> exerciseList = new ArrayList<Exercise>();
 
-        String selectQuery = "SELECT * FROM " + SPORTS_TABLE_NAME;
+        String selectQuery = "SELECT * FROM " + SPORTS_TABLE_NAME +
+                " ORDER BY " + SPORTS_COLUMN_DATE +" DESC";
 
         SQLiteDatabase db = this.getReadableDatabase();
 

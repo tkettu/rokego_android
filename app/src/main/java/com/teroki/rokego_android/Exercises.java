@@ -2,6 +2,7 @@ package com.teroki.rokego_android;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.provider.Settings;
@@ -17,8 +18,11 @@ import android.widget.TextView;
 
 import com.teroki.rokego_db.DBHelper;
 import com.teroki.rokego_helpers.DateHelper;
+import com.teroki.rokego_helpers.StringHandler;
 import com.teroki.rokego_objects.Exercise;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Exercises extends Activity /* extends ListActivity */{
@@ -52,19 +56,25 @@ public class Exercises extends Activity /* extends ListActivity */{
         for (Exercise e: exes){
 
         }*/
-        List<String> exes = db.exerciseList();
+        List<Exercise> exesE = db.getExercises();
 
-        ListAdapter adapter = new ArrayAdapter<>(this,
+        setTotalTime(exesE);
+        setTotalDistance(exesE);
+        StringHandler sh = new StringHandler();
+
+        List<String> exes = sh.fixedLengthArray(exesE);//db.exerciseList();
+
+        /*final StableArrayAdapter adapter = new StableArrayAdapter(this,
                 android.R.layout.simple_list_item_1,
+                exes);*/
+        ListAdapter adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_2,
                 android.R.id.text1,
                 exes);
 
         exercises.setAdapter(adapter);
 
-        List<Exercise> exesE = db.getExercises();
 
-        setTotalTime(exesE);
-        setTotalDistance(exesE);
 
         //exercises = (ListView) findViewById();
         //exercises.setAdapter();
@@ -104,5 +114,30 @@ public class Exercises extends Activity /* extends ListActivity */{
     /* @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
+    }*/
+
+    /*private class StableArrayAdapter extends ArrayAdapter<String> {
+
+        HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
+
+        public StableArrayAdapter(Context context, int textViewResourceId,
+                                  List<String> objects) {
+            super(context, textViewResourceId, objects);
+            for (int i = 0; i < objects.size(); ++i) {
+                mIdMap.put(objects.get(i), i);
+            }
+        }
+
+        @Override
+        public long getItemId(int position) {
+            String item = getItem(position);
+            return mIdMap.get(item);
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return true;
+        }
+
     }*/
 }
