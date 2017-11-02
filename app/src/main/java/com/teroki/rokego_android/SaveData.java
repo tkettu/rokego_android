@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.teroki.rokego_db.DBHelper;
+import com.teroki.rokego_helpers.DateHelper;
 import com.teroki.rokego_objects.Exercise;
 
 import org.json.JSONException;
@@ -26,14 +27,18 @@ import java.util.List;
 public class SaveData extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     Button saveBtn;
-    EditText eTime, eDist;
+    EditText eDist;
+    EditText eHour, eMinutes, eSeconds;
     String distance, time;
+    int[] timeList;
+    int hours, minutes, seconds;
     String name = ""; // name of sport
     long date;
     Spinner sports, sportsType;
     private String LOG_TAG = "SaveData";
 
     JSONObject jsonObject = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +54,22 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
             distance = "0,0";
         }
         time = intent.getStringExtra(MainActivity.TIME_MSG);
-        if (time == ""){
-            time = "0:0";
-        }
+        timeList = DateHelper.timeToArray(time); // time (h:mm:ss or mm:ss) to [h, mm, ss]
+        Log.d(LOG_TAG, timeList.toString());
+
+        /*if (time == ""){
+            time = "00:00:00";
+        }*/
         Log.d("Sport: ", String.valueOf(time) + " AND " + String.valueOf(distance));
 
-        eTime = (EditText) findViewById(R.id.time_edit);
-        eTime.setText(time);
+        //TOdo get hours, minutes, seconds from time
+        eHour = (EditText) findViewById(R.id.time_edit_hour);
+        eHour.setText(""+timeList[0]);
+        eMinutes = (EditText) findViewById(R.id.time_edit_minutes);
+        eMinutes.setText(""+timeList[1]);
+        eSeconds = (EditText) findViewById(R.id.time_edit_seconds);
+        eSeconds.setText(""+timeList[2]);
+
         eDist = (EditText) findViewById(R.id.distance_edit);
         eDist.setText(distance);
 
@@ -96,7 +110,10 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
         }catch (NumberFormatException ne){
             sDistance = 0.0;
         }
-        String sTime = eTime.getText().toString();
+        String sTime = DateHelper.concatTime(eHour.getText().toString(),
+                                            eMinutes.getText().toString(),
+                                            eSeconds.getText().toString()); //eTime.getText().toString();
+        Log.d(LOG_TAG, "TIme is " + sTime);
         sTime = (sTime != null ? sTime : "0:0");
 
         date = System.currentTimeMillis();
