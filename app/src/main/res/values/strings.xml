@@ -9,6 +9,7 @@
     <string name="btn_stop">Stop</string>
 
     <string name="save_data">Save</string>
+    <string name="delete_item">Delete</string>
 
     <!-- Labels-->
     <string name="label_time">Time</string>

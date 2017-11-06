@@ -74,10 +74,19 @@ public class DateHelper {
     }
 
     public static String concatTime(int hours, int minutes, int seconds) {
-        return (String.valueOf(hours) + ":" + String.valueOf(minutes) + ":" + String.valueOf(seconds));
+        String time = "";
+        String h, m, s;
+        h = String.valueOf(hours);
+        m = (minutes >= 10 ? String.valueOf(minutes) : "0"+ String.valueOf(minutes));
+        s = (seconds >= 10 ? String.valueOf(seconds) : "0"+ String.valueOf(seconds));
+
+        return (h + ":" + m + ":" + s);
     }
 
     public static String concatTime(String hours, String minutes, String seconds) {
-        return (hours + ":" + minutes + ":" + seconds);
+        String m, s;
+        m = (minutes.length() >= 2 ? minutes : "0"+minutes);
+        s = (seconds.length() >= 2 ? seconds : "0"+ seconds);
+        return (hours + ":" + m + ":" + s);
     }
 }

@@ -8,7 +8,7 @@ import com.teroki.rokego_helpers.DateHelper;
 
 public class Exercise {
 
-    private int _id;
+    private long _id;
     private String _name;
     private double _distance;
     private String _time;
@@ -32,49 +32,49 @@ public class Exercise {
         this._date = _date;
     }
 
-    public int get_id() {
+    public long getId() {
         return _id;
     }
 
-    public void set_id(int _id) {
+    public void setId(long _id) {
         this._id = _id;
     }
 
-    public String get_name() {
+    public String getName() {
         return _name;
     }
 
-    public void set_name(String _name) {
+    public void setName(String _name) {
         this._name = _name;
     }
 
-    public double get_distance() {
+    public double getDistance() {
         return _distance;
     }
 
-    public void set_distance(double _distance) {
+    public void setDistance(double _distance) {
         this._distance = _distance;
     }
 
-    public String get_time() {
+    public String getTime() {
         return _time;
     }
 
-    public void set_time(String _time) {
+    public void setTime(String _time) {
         this._time = _time;
     }
 
-    public long get_date() {
+    public long getDate() {
         return _date;
     }
 
-    public void set_date(long _date) {
+    public void setDate(long _date) {
         this._date = _date;
     }
 
     public String format_date(){
         DateHelper dateHelper = new DateHelper();
-        return dateHelper.getDate(get_date());
+        return dateHelper.getDate(getDate());
     }
 
     public double timeToHours(){
@@ -88,6 +88,12 @@ public class Exercise {
             tt = Double.parseDouble(t[2])/(60 *60) + Double.parseDouble(t[1])/60 + Double.parseDouble(t[0]);
         }
         return Math.round(tt * 1000d) / 1000d;
+    }
+
+    @Override
+    public String toString(){
+        //Todo Formatting
+        return (_name + " " + _time + " " + String.valueOf(_distance) + " " + format_date());
     }
 
 

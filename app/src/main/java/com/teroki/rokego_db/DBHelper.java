@@ -49,10 +49,10 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(SPORTS_COLUMN_NAME, exercise.get_name());
-        values.put(SPORTS_COLUMN_DISTANCE, exercise.get_distance());
-        values.put(SPORTS_COLUMN_TIME, exercise.get_time());
-        values.put(SPORTS_COLUMN_DATE, exercise.get_date());
+        values.put(SPORTS_COLUMN_NAME, exercise.getName());
+        values.put(SPORTS_COLUMN_DISTANCE, exercise.getDistance());
+        values.put(SPORTS_COLUMN_TIME, exercise.getTime());
+        values.put(SPORTS_COLUMN_DATE, exercise.getDate());
 
         db.insert(SPORTS_TABLE_NAME, null, values);
         db.close();
@@ -71,7 +71,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Exercise exercise = new Exercise(Integer.parseInt(cursor.getString(0)),
                 cursor.getString(1), Double.parseDouble(cursor.getString(2)), cursor.getString(3),
                 Long.parseLong(cursor.getString(4)));
-
+        db.close();
         return exercise;
     }
 
@@ -88,15 +88,16 @@ public class DBHelper extends SQLiteOpenHelper {
         if(cursor.moveToFirst()){
             do {
                 Exercise exercise = new Exercise();
-                exercise.set_id(Integer.parseInt(cursor.getString(0)));
-                exercise.set_name(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_NAME)));
-                exercise.set_distance(Double.parseDouble(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_DISTANCE))));
-                exercise.set_time(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_TIME)));
-                exercise.set_date(Long.parseLong(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_DATE))));
+                exercise.setId(Integer.parseInt(cursor.getString(0)));
+                exercise.setName(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_NAME)));
+                exercise.setDistance(Double.parseDouble(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_DISTANCE))));
+                exercise.setTime(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_TIME)));
+                exercise.setDate(Long.parseLong(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_DATE))));
 
                 exerciseList.add(exercise);
             }while(cursor.moveToNext());
         }
+        db.close();
 
         return exerciseList;
     }
@@ -134,16 +135,16 @@ public class DBHelper extends SQLiteOpenHelper {
         if(cursor.moveToFirst()){
             do {
                 Exercise exercise = new Exercise();
-                exercise.set_id(Integer.parseInt(cursor.getString(0)));
-                exercise.set_name(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_NAME)));
-                exercise.set_distance(Double.parseDouble(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_DISTANCE))));
-                exercise.set_time(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_TIME)));
-                exercise.set_date(Long.parseLong(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_DATE))));
+                exercise.setId(Integer.parseInt(cursor.getString(0)));
+                exercise.setName(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_NAME)));
+                exercise.setDistance(Double.parseDouble(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_DISTANCE))));
+                exercise.setTime(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_TIME)));
+                exercise.setDate(Long.parseLong(cursor.getString(cursor.getColumnIndex(SPORTS_COLUMN_DATE))));
 
                 exerciseList.add(exercise);
             }while(cursor.moveToNext());
         }
-
+        db.close();
         return exerciseList;
 
     }
@@ -153,7 +154,7 @@ public class DBHelper extends SQLiteOpenHelper {
         List<String> sExes = new ArrayList<>();
 
         for (Exercise e: exes){
-            String s = e.get_name() + ", time: " + e.get_time() + " distance: " + e.get_distance() +
+            String s = e.getName() + ", time: " + e.getTime() + " distance: " + e.getDistance() +
                     " date: " + e.format_date();
             sExes.add(s );
         }
@@ -175,7 +176,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public int updateExercise(Exercise exercise){return 0;}
 
-    public void deleteExercise(Exercise exercise){}
+    public void deleteExercise(Exercise exercise){
+
+    }
 
     /*public DBHelper open(){
         SQLiteDatabase db = this.getReadableDatabase();

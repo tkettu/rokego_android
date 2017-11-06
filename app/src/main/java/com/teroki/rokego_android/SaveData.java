@@ -1,5 +1,6 @@
 package com.teroki.rokego_android;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -20,9 +22,12 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 public class SaveData extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -38,6 +43,10 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
     private String LOG_TAG = "SaveData";
 
     JSONObject jsonObject = null;
+
+    Calendar mCalendar = Calendar.getInstance();
+    EditText dateText;
+
 
 
     @Override
@@ -86,10 +95,41 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
         //sports.setOnItemClickListener(changeSports());
         sports.setOnItemSelectedListener(this);
 
+        setDatePicker();
+
+
         //name = sports.getSelectedItem().toString();
 
     }
 
+    private void setDatePicker() {
+        dateText = (EditText) findViewById(R.id.sports_date);
+        final DatePickerDialog.OnDateSetListener dateP = new DatePickerDialog.OnDateSetListener(){
+
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                mCalendar.set(Calendar.YEAR, year);
+                mCalendar.set(Calendar.MONTH, month);
+                mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateSportsDate();
+            }
+        };
+
+        dateText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new DatePickerDialog(SaveData.this, dateP, mCalendar.get(Calendar.YEAR),
+                        mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+    }
+
+    private void updateSportsDate() {
+        String dFormat = "dd/MM/yyyy";
+        SimpleDateFormat sdf = new SimpleDateFormat(dFormat, Locale.getDefault());
+
+        dateText.setText(sdf.format(mCalendar.getTime()));
+    }
 
 
     public void saveDataToDB(View view){
@@ -97,6 +137,7 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
         DBHelper db = new DBHelper(this);
         //Todo time = getEditetext ja Distance sama, then check if empty/null
         // Todo date
+        //https://stackoverflow.com/questions/14933330/datepicker-how-to-popup-datepicker-when-click-on-edittext
 
         if (name != ""){
 
@@ -113,6 +154,7 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
         String sTime = DateHelper.concatTime(eHour.getText().toString(),
                                             eMinutes.getText().toString(),
                                             eSeconds.getText().toString()); //eTime.getText().toString();
+        //TODO Should we save time as ms
         Log.d(LOG_TAG, "TIme is " + sTime);
         sTime = (sTime != null ? sTime : "0:0");
 
@@ -141,8 +183,8 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
         List<Exercise> exercises = db.getExercises();
 
         for(Exercise e: exercises){
-            String log = "Id: " + e.get_id() + ", Name: " + e.get_name() + ", distance: " + e.get_distance()
-                    + ", time: " + e.get_time();
+            String log = "Id: " + e.getId() + ", Name: " + e.getName() + ", distance: " + e.getDistance()
+                    + ", time: " + e.getTime();
             Log.d("Exercise: ", log);
         }
 

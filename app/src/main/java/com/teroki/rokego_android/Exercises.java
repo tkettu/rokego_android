@@ -1,16 +1,11 @@
 package com.teroki.rokego_android;
 
 import android.app.Activity;
-import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.provider.Settings;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -21,8 +16,6 @@ import com.teroki.rokego_helpers.DateHelper;
 import com.teroki.rokego_helpers.StringHandler;
 import com.teroki.rokego_objects.Exercise;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class Exercises extends Activity /* extends ListActivity */{
@@ -30,9 +23,11 @@ public class Exercises extends Activity /* extends ListActivity */{
     private ListView exercises;
     private TextView totalTime;
     private TextView totalDistance;
-    //private DBHelper db;
+    private DBHelper db;
 
-    private DateHelper dateHelper;
+    private String LOG_TAG = "Exercises";
+
+    public static final String EXERCISE_MSG = "com.teroki.rokego_android.EDIT_EXERCISE";
 
     //Todo totalDistance and time layouts and exerciseList to table?
 
@@ -41,13 +36,11 @@ public class Exercises extends Activity /* extends ListActivity */{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercises);
 
-        dateHelper = new DateHelper();
-
         totalTime = findViewById(R.id.textView_totalTime);
         totalDistance = findViewById(R.id.textView_totalDistance);
         exercises = findViewById(R.id.list);
 
-        DBHelper db = new DBHelper(this);
+         db = new DBHelper(this);
 
         //Log.d("Harjoitusksia ", String.valueOf( db.countExercises()));
 
@@ -70,15 +63,28 @@ public class Exercises extends Activity /* extends ListActivity */{
         ListAdapter adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_2,
                 android.R.id.text1,
-                exes);
+                exesE);
 
         exercises.setAdapter(adapter);
+
+        exercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+
+                Exercise ex = (Exercise)adapter.getItemAtPosition(position);
+                Intent intent = new Intent(Exercises.this, EditExercise.class);
+                intent.putExtra(EXERCISE_MSG, ex.getId());
+                startActivity(intent);
+
+            }
+        });
 
 
 
         //exercises = (ListView) findViewById();
         //exercises.setAdapter();
     }
+
 
     private void setTotalTime(List<Exercise> exesE) {
 
@@ -89,7 +95,7 @@ public class Exercises extends Activity /* extends ListActivity */{
             tt += ut;
         }
 
-        totalTime.setText(dateHelper.hoursToTime(tt) );
+        totalTime.setText(DateHelper.hoursToTime(tt) );
 
     }
 
@@ -97,7 +103,7 @@ public class Exercises extends Activity /* extends ListActivity */{
         double td = 0.0;
 
         for (Exercise e: exesE){
-            double ud = e.get_distance();
+            double ud = e.getDistance();
             td += ud;
         }
 

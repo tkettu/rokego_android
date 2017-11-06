@@ -24,8 +24,8 @@ public class StringHandler {
        List<String> sExes = new ArrayList<>();
 
         for (Exercise e: strList){
-            String s = fixedLengthString(e.get_name().trim(), NAME_LEN, false) +  fixedLengthString(e.get_time().trim(), TIME_LEN, true)
-                    + fixedLengthString(String.valueOf(e.get_distance()).trim(), DIST_LEN, true)
+            String s = fixedLengthString(e.getName().trim(), NAME_LEN, false) +  fixedLengthString(e.getTime().trim(), TIME_LEN, true)
+                    + fixedLengthString(String.valueOf(e.getDistance()).trim(), DIST_LEN, true)
                     + fixedLengthString(e.format_date().trim(), NAME_LEN, true);
             sExes.add(s);
             Log.d(LOG_TAG, s);
