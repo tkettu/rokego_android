@@ -31,4 +31,8 @@ public class Constants {
         public static final int BTN_CONTINUE = 3;
     }
 
+    public interface DATE_FORMAT{
+        public static final String DEFAULT_FORMAT = "dd/MM/yyyy";
+    }
+
 }

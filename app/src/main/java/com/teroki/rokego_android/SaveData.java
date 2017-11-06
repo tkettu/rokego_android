@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -34,6 +35,7 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
     Button saveBtn;
     EditText eDist;
     EditText eHour, eMinutes, eSeconds;
+    EditText dateText;
     String distance, time;
     int[] timeList;
     int hours, minutes, seconds;
@@ -45,7 +47,7 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
     JSONObject jsonObject = null;
 
     Calendar mCalendar = Calendar.getInstance();
-    EditText dateText;
+
 
 
 
@@ -64,14 +66,7 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
         }
         time = intent.getStringExtra(MainActivity.TIME_MSG);
         timeList = DateHelper.timeToArray(time); // time (h:mm:ss or mm:ss) to [h, mm, ss]
-        Log.d(LOG_TAG, timeList.toString());
 
-        /*if (time == ""){
-            time = "00:00:00";
-        }*/
-        Log.d("Sport: ", String.valueOf(time) + " AND " + String.valueOf(distance));
-
-        //TOdo get hours, minutes, seconds from time
         eHour = (EditText) findViewById(R.id.time_edit_hour);
         eHour.setText(""+timeList[0]);
         eMinutes = (EditText) findViewById(R.id.time_edit_minutes);
@@ -114,6 +109,7 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
                 updateSportsDate();
             }
         };
+        dateText.setText(DateHelper.getDate(System.currentTimeMillis()));
 
         dateText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,7 +121,7 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
     }
 
     private void updateSportsDate() {
-        String dFormat = "dd/MM/yyyy";
+        String dFormat = Constants.DATE_FORMAT.DEFAULT_FORMAT;
         SimpleDateFormat sdf = new SimpleDateFormat(dFormat, Locale.getDefault());
 
         dateText.setText(sdf.format(mCalendar.getTime()));
@@ -155,38 +151,14 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
                                             eMinutes.getText().toString(),
                                             eSeconds.getText().toString()); //eTime.getText().toString();
         //TODO Should we save time as ms
-        Log.d(LOG_TAG, "TIme is " + sTime);
         sTime = (sTime != null ? sTime : "0:0");
 
-        date = System.currentTimeMillis();
+        //date = System.currentTimeMillis();
+        String sDate = dateText.getText().toString();
+        date = DateHelper.dateToMillis(sDate);
 
         Exercise exercise = new Exercise(name, sDistance, sTime, date);
         db.addExercise(exercise);
-
-       /* if( distance == null || time == null){
-            db.addExercise(new Exercise(name, 0.0, "0:0", date));
-        }
-        else{
-            double d = 0.0;
-            try{
-                d = Double.parseDouble(distance);
-            }catch (NumberFormatException e){
-                d = 0.0;
-            }
-            Exercise exercise = new Exercise(name,d,time, date);
-
-            db.addExercise(exercise);
-        }
-*/
-
-        Log.d("Exercises","All exercises..");
-        List<Exercise> exercises = db.getExercises();
-
-        for(Exercise e: exercises){
-            String log = "Id: " + e.getId() + ", Name: " + e.getName() + ", distance: " + e.getDistance()
-                    + ", time: " + e.getTime();
-            Log.d("Exercise: ", log);
-        }
 
         Intent intent = new Intent(SaveData.this, Exercises.class);
         startActivity(intent);

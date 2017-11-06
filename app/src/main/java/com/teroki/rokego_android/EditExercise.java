@@ -50,6 +50,8 @@ public class EditExercise extends Activity {
             @Override
             public void onClick(View view) {
                 db.deleteExercise(db.getExercise((int)id));
+                Intent intent = new Intent(EditExercise.this, Exercises.class);
+                startActivity(intent);
             }
         });
     }

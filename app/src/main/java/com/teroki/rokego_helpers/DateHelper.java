@@ -1,7 +1,11 @@
 package com.teroki.rokego_helpers;
 
+import com.teroki.rokego_android.Constants;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Helper class for time and date handling
@@ -10,7 +14,8 @@ import java.util.Calendar;
 
 public class DateHelper {
 
-    private static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
+    //private static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
+    private static final String DEFAULT_DATE_FORMAT = Constants.DATE_FORMAT.DEFAULT_FORMAT;
 
     /**
      * Format date as milliseconds to default dateformat
@@ -33,6 +38,29 @@ public class DateHelper {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(milliseconds);
         return formatter.format(calendar.getTime());
+    }
+
+    /**
+     * Convert date string to milliseconds
+     * @param date As default format (ex. "dd/MM/yyyy")
+     * @return date as milliseconds
+     */
+
+    public static long dateToMillis(String date){
+        return dateToMillis(date, DEFAULT_DATE_FORMAT);
+    }
+
+    public static long dateToMillis(String date, String dateFormat){
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        Date d = null;
+        try {
+            d = sdf.parse(date);
+            return d.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return System.currentTimeMillis();
+        }
+
     }
 
 

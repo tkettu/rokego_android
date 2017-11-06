@@ -176,8 +176,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public int updateExercise(Exercise exercise){return 0;}
 
-    public void deleteExercise(Exercise exercise){
+    public boolean deleteExercise(Exercise exercise){
 
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(SPORTS_TABLE_NAME, SPORTS_COLUMN_ID +"="+exercise.getId(), null) > 0;
+        //close db ??
     }
 
     /*public DBHelper open(){
