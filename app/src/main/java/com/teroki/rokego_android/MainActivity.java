@@ -17,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -69,6 +71,12 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Enables activity awake when screen locked
+        final Window win = getWindow();
+        win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+        win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                        | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+
         receiver = new MessageReceiver();
 
         startBtn = (Button) findViewById(R.id.button_start);
@@ -78,20 +86,13 @@ public class MainActivity extends AppCompatActivity{
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Intent intent = new Intent(MainActivity.this, SaveData.class);
-                //startActivity(intent);
                 addExercise();
             }
         });
 
-       // timeLayout = (LinearLayout) findViewById(R.id.time_layout);
-       // distanceLayout = (LinearLayout) findViewById(R.id.distance_layout);
-
         chronometer = (PausableChronometer) findViewById(R.id.chronometer);
         distance = (TextView) findViewById(R.id.distance);
-        //searching = (TextView) findViewById(R.id.location);
         setSupportActionBar(mainToolbar);
-
 
         //setStateToStart();
         setButtonState(Constants.BUTTON_STATES.BTN_START);
@@ -103,34 +104,25 @@ public class MainActivity extends AppCompatActivity{
             } else{
                 Log.d("GPS", "Enabling gps");
                 gps = new GpsTracker(MainActivity.this);
-                if (gps.canGetLocation()){
-                    double latitude = gps.getLatitude();
-                    double longitude = gps.getLongitude();
-
-                    Toast.makeText(getApplicationContext(), "Sijaintisi on - \nLat: "
-                            + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
-                }else{
+                if (gps.canGetLocation()){}
+                else{
                     gps.showSettingsAlert();
                 }
 
                 gps.setDistanceField((TextView) findViewById(R.id.distance));
                 //gps.setLocationField((TextView) findViewById(R.id.location));
                 gps.trackingStarted = false;
-
-
             }
         }catch (Exception e){
 
         }
 
-        Log.d(LOG_TAG, "Creating " + chronometer.toString() + " and " + gps.toString());
         tracker = new Tracker(this, chronometer, gps);
 
         // Todo, check Location permissions when implemented
-       /* gps = new Tracker(MainActivity.this);
+
         // Todo turn of gps when closing app and tracking not started
 
-*/
     }
 
 
@@ -176,26 +168,15 @@ public class MainActivity extends AppCompatActivity{
             gps.start(); // Todo, what if location permission not granted???
             */
 
-            //if (gps.canGetLocation()){
-            //    searching.setText("Location found");
-            //}
-
-
         }else{
             pause();
-
         }
 
     }
 
     public void continue2(){
 
-
-
-        //chronometer.start();
-        //gps.start(); // Todo, what if location permission not granted???
         Intent startIntent = new Intent(MainActivity.this, ForeGroundService.class);
-
 
         startIntent.putExtra("elapsedTime", chronometer.getBase());
         startIntent.putExtra("elapsedDistance", gps.getDistance());
@@ -203,17 +184,12 @@ public class MainActivity extends AppCompatActivity{
         startService(startIntent);
         //startBtn.setText(R.string.btn_pause);
         setButtonState(Constants.BUTTON_STATES.BTN_PAUSE);
-
         tracker.start();
-
         stopBtn.setVisibility(View.INVISIBLE);
-
         startBtnClicked = true;
     }
 
     public void pause() {
-        //chronometer.stop();
-        //gps.pause();
         tracker.pause();
         setButtonState(Constants.BUTTON_STATES.BTN_CONTINUE);
 
@@ -230,19 +206,6 @@ public class MainActivity extends AppCompatActivity{
         stopForeground();
 
         addExercise();
-       /* Intent saveIntent = new Intent(MainActivity.this, SaveData.class);
-        TextView tDistance = (TextView) findViewById(R.id.distance);
-        PausableChronometer tTime = (PausableChronometer) findViewById(R.id.chronometer);
-
-        String mDistance = tDistance.getText().toString();
-        NumericChecker nChecker = new NumericChecker();
-        mDistance = (nChecker.isNumeric(mDistance) ? mDistance: "0.0" );
-
-        String mTime = tTime.getText().toString();
-        saveIntent.putExtra(TIME_MSG, mTime);
-        saveIntent.putExtra(DISTANCE_MSG, mDistance);
-        startActivity(saveIntent);*/
-
 
         //reset distance
         resetGps();
@@ -314,21 +277,11 @@ public class MainActivity extends AppCompatActivity{
 
 
     public void test(){
-        //Intent intent = new Intent(this, TestActivity.class);
-        //startActivity(intent);
         Intent stopIntent = new Intent(MainActivity.this, Tracker.class);
         stopIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
         startService(stopIntent);
         startBtn.setText("STOPPPED TEST");
     }
-
-    /*private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(LOG_TAG, "BroadcastReceiver");
-            pause();
-        }
-    };*/
 
     @Override
     protected void onResume(){
