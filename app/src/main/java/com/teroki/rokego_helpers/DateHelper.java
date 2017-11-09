@@ -1,6 +1,6 @@
 package com.teroki.rokego_helpers;
 
-import com.teroki.rokego_android.Constants;
+import com.teroki.interfaces.Constants;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,7 +19,7 @@ public class DateHelper {
 
     /**
      * Format date as milliseconds to default dateformat
-     * @param milliseconds
+     * @param milliseconds Date as milliseconds
      * @return date as default format
      */
     public static String getDate(long milliseconds){
@@ -28,9 +28,9 @@ public class DateHelper {
 
     /**
      * Format date as user format
-     * @param milliseconds
-     * @param dateFormat
-     * @return
+     * @param milliseconds Date as milliseconds
+     * @param dateFormat Format of date (ex. 'dd/MM/yyyy')
+     * @return Formatted date
      */
     public static String getDate(long milliseconds, String dateFormat){
         SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
@@ -52,7 +52,7 @@ public class DateHelper {
 
     public static long dateToMillis(String date, String dateFormat){
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-        Date d = null;
+        Date d;
         try {
             d = sdf.parse(date);
             return d.getTime();
@@ -86,7 +86,7 @@ public class DateHelper {
      */
     public static int[] timeToArray(String time){
         String[] timeA = time.split(":");
-        int[] timeR = {0, 00, 00};
+        int[] timeR = {0, 0, 0};
         //timeR[0] = (timeA.length == 3 ? Integer.parseInt(timeA[0]): 0);
         if (timeA.length == 3){
             timeR[0] = Integer.parseInt(timeA[0]);

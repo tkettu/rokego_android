@@ -13,20 +13,20 @@ import java.util.List;
 
 public class StringHandler {
 
-    private final int NAME_LEN = 25;
-    private final int DIST_LEN = 10;
-    private final int TIME_LEN = 12;
-    private final int DATE_LEN = 12;
+    private static final int NAME_LEN = 25;
+    private static final int DIST_LEN = 10;
+    private static final int TIME_LEN = 12;
+    private static final int DATE_LEN = 12;
 
-    String LOG_TAG = "StringHandler";
+    private static String LOG_TAG = "StringHandler";
 
-    public List<String> fixedLengthArray(List<Exercise> strList){
+    public static List<String> fixedLengthArray(List<Exercise> strList){
        List<String> sExes = new ArrayList<>();
 
         for (Exercise e: strList){
             String s = fixedLengthString(e.getName().trim(), NAME_LEN, false) +  fixedLengthString(e.getTime().trim(), TIME_LEN, true)
                     + fixedLengthString(String.valueOf(e.getDistance()).trim(), DIST_LEN, true)
-                    + fixedLengthString(e.format_date().trim(), NAME_LEN, true);
+                    + fixedLengthString(e.formatDate().trim(), NAME_LEN, true);
             sExes.add(s);
             Log.d(LOG_TAG, s);
         }
@@ -34,7 +34,7 @@ public class StringHandler {
         return sExes;
     }
 
-    private String fixedLengthString(String str, int len, boolean reverse){
+    private static String fixedLengthString(String str, int len, boolean reverse){
         //return String.format("%1$" + len + "s ", str);
         return (reverse ? String.format("%1$" + len + "s", str) : String.format("%-" + len +"s", str));
         //return (reverse ? String.format("%" + len/2 + "%1$" + len/2 + "s", str)

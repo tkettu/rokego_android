@@ -53,9 +53,15 @@ public class Exercises extends Activity /* extends ListActivity */{
 
         setTotalTime(exesE);
         setTotalDistance(exesE);
-        StringHandler sh = new StringHandler();
+        makeExerciseList(exesE);
 
-        List<String> exes = sh.fixedLengthArray(exesE);//db.exerciseList();
+
+        //exercises = (ListView) findViewById();
+        //exercises.setAdapter();
+    }
+
+    private void makeExerciseList(List<Exercise> exesE) {
+        List<String> exes = StringHandler.fixedLengthArray(exesE);//db.exerciseList();
 
         /*final StableArrayAdapter adapter = new StableArrayAdapter(this,
                 android.R.layout.simple_list_item_1,
@@ -78,11 +84,6 @@ public class Exercises extends Activity /* extends ListActivity */{
 
             }
         });
-
-
-
-        //exercises = (ListView) findViewById();
-        //exercises.setAdapter();
     }
 
 

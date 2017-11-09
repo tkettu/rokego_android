@@ -34,7 +34,6 @@
             android:enabled="true"
             android:exported="true" />
 
-
         <activity android:name=".SaveData" />
         <activity
             android:name=".Exercises"
@@ -43,7 +42,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".EditExercise"/>
+        <activity android:name=".EditExercise" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
@@ -56,7 +55,9 @@
         <service
             android:name=".ForeGroundService"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="true" />
+
+        <activity android:name=".FilterActivity" />
     </application>
 
 </manifest>

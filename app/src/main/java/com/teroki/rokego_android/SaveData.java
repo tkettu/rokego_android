@@ -13,21 +13,19 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.teroki.interfaces.Constants;
 import com.teroki.rokego_db.DBHelper;
+import com.teroki.rokego_helpers.AssetLoader;
 import com.teroki.rokego_helpers.DateHelper;
+import com.teroki.rokego_helpers.JSONHelper;
 import com.teroki.rokego_objects.Exercise;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 
 public class SaveData extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -40,16 +38,12 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
     int[] timeList;
     int hours, minutes, seconds;
     String name = ""; // name of sport
+    String type = ""; // Type of sport (sub name)
     long date;
     Spinner sports, sportsType;
     private String LOG_TAG = "SaveData";
 
-    JSONObject jsonObject = null;
-
     Calendar mCalendar = Calendar.getInstance();
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,14 +71,15 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
         eDist = (EditText) findViewById(R.id.distance_edit);
         eDist.setText(distance);
 
-        ArrayList sportlist = getSportList("sports.json");
+        ArrayList sportList = JSONHelper.getKeyList(loadSportJson());
 
         sports = (Spinner) findViewById(R.id.sports_spinner);
         sportsType = (Spinner) findViewById(R.id.sports_type_spinner);
 
+        /*ArrayAdapter<String> sports_adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, sportlist);*/
         ArrayAdapter<String> sports_adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, sportlist);
-
+                R.layout.spinner_item, sportList);
         sports.setAdapter(sports_adapter);
         sports.setSelection(0);
         //sports.setOnItemClickListener(changeSports());
@@ -110,7 +105,14 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
             }
         };
         dateText.setText(DateHelper.getDate(System.currentTimeMillis()));
-
+        dateText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (b)
+                    new DatePickerDialog(SaveData.this, dateP, mCalendar.get(Calendar.YEAR),
+                            mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
         dateText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -132,8 +134,6 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
         Log.d("Adding: ", String.valueOf(time) + " AND " + String.valueOf(distance));
         DBHelper db = new DBHelper(this);
         //Todo time = getEditetext ja Distance sama, then check if empty/null
-        // Todo date
-        //https://stackoverflow.com/questions/14933330/datepicker-how-to-popup-datepicker-when-click-on-edittext
 
         if (name != ""){
 
@@ -157,7 +157,7 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
         String sDate = dateText.getText().toString();
         date = DateHelper.dateToMillis(sDate);
 
-        Exercise exercise = new Exercise(name, sDistance, sTime, date);
+        Exercise exercise = new Exercise(name,type, sDistance, sTime, date);
         db.addExercise(exercise);
 
         Intent intent = new Intent(SaveData.this, Exercises.class);
@@ -165,113 +165,47 @@ public class SaveData extends AppCompatActivity implements AdapterView.OnItemSel
 
     }
 
-    // Todo load sports types to sport_type spinner by main sport
-    private ArrayList<String> getSportList(String filename){
-        String jo = loadSports("sports.json");
-
-
-        try {
-            jsonObject = new JSONObject(jo);
-        }catch (JSONException je){
-            Log.e(LOG_TAG, "Json error", je.getCause());
-        }
-
-        Iterator<?> keys = jsonObject.keys();
-        ArrayList<String> mainSports = new ArrayList<>();
-        try{
-            while (keys.hasNext()){
-                String key = (String)keys.next();
-                Log.d(LOG_TAG, key );
-                mainSports.add(key);
-                Log.d(LOG_TAG, jsonObject.getString(key));
-                if (jsonObject.get(key) instanceof  JSONObject){
-
-                }
-
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return mainSports;
-    }
-
-    // Load sports.json from assets
-    private String loadSports(String filename){
-        String contents = "";
-        try {
-            InputStream stream = getAssets().open(filename);
-
-            int size = stream.available();
-            byte[] buffer = new byte[size];
-            stream.read(buffer);
-            stream.close();
-            contents = new String(buffer);
-
-
-        }catch (IOException e){
-            Log.e(LOG_TAG, "Couldnt find " + filename, e.getCause());
-        }
-        return contents;
-    }
-
-    private ArrayList<String> getSportsType(String name){
-        String jo = loadSports("sports.json");
-        ArrayList<String> sportsTypes = new ArrayList<>();
-        try{
-            JSONObject jsonObject = new JSONObject(jo);
-
-             sportsTypes = new ArrayList<>();
-            String s = jsonObject.getString(name);
-            String[] types = s.split(",");
-            for (String si : types){
-                String sir = si.replace("[","").replace("]","").replace("\"","");
-                sportsTypes.add(sir);
-            }
-            sportsTypes.add(0, name);
-            //sportsTypes = (ArrayList<String>) jsonObject.getString(name).split(",");
-
-        }catch (JSONException je){
-            je.printStackTrace();
-        }
-
-
-        return sportsTypes;
-
-    }
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         String sName = adapterView.getItemAtPosition(i).toString();
         this.name = sName;
+
+        ArrayList<String> st = JSONHelper.getValueList(loadSportJson(), sName);
+
+        /*ArrayAdapter<String> stype_adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, st);*/
+        ArrayAdapter<String> stype_adapter = new ArrayAdapter<String>(this,
+                R.layout.spinner_item, st);
+        sportsType.setAdapter(stype_adapter);
+        sportsType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+            {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String mName = adapterView.getItemAtPosition(i).toString();
+                if (mName != ""){
+                    Log.d(LOG_TAG, "Name is " + mName);
+                    /*name = mName;*/
+                    type = mName;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+    }
+
+    private String loadSportJson(){
         try {
-            Log.d(LOG_TAG, jsonObject.getString(sName));
-            ArrayList<String> st = getSportsType(sName);
-
-            ArrayAdapter<String> stype_adapter = new ArrayAdapter<String>(this,
-                    android.R.layout.simple_spinner_item, st);
-            sportsType.setAdapter(stype_adapter);
-            sportsType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-                {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    String mName = adapterView.getItemAtPosition(i).toString();
-                    if (mName != ""){
-                        Log.d(LOG_TAG, "Name is " + mName);
-                        name = mName;
-                    }
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-
-                }
-            });
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+            InputStream stream = getAssets().open(Constants.ASSET_FILES.SPORTS_FILE);
+            return AssetLoader.loadSports(stream);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, String.format("Couldn't open file {s}", Constants.ASSET_FILES.SPORTS_FILE));
+            return "NO FILE";
         }
-
     }
 
     @Override

@@ -5,7 +5,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -13,10 +12,9 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
-import java.security.Provider;
+import com.teroki.interfaces.Constants;
 
 public class GpsTracker extends Service implements LocationListener{
 

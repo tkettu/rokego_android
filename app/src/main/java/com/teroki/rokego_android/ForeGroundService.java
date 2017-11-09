@@ -7,9 +7,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import com.teroki.interfaces.Constants;
 
 public class ForeGroundService extends Service {
     public ForeGroundService() {

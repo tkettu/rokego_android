@@ -10,6 +10,7 @@ public class Exercise {
 
     private long _id;
     private String _name;
+    private String _type;
     private double _distance;
     private String _time;
     private long _date; //date as milliseconds
@@ -20,6 +21,7 @@ public class Exercise {
     public Exercise(int _id, String _name, double _distance, String _time, long _date) {
         this._id = _id;
         this._name = _name;
+        this._type = "";
         this._distance = _distance;
         this._time = _time;
         this._date = _date;
@@ -27,6 +29,24 @@ public class Exercise {
 
     public Exercise(String _name, double _distance, String _time, long _date) {
         this._name = _name;
+        this._type = "";
+        this._distance = _distance;
+        this._time = _time;
+        this._date = _date;
+    }
+
+    public Exercise(int _id, String _name, String _type, double _distance, String _time, long _date) {
+        this._id = _id;
+        this._name = _name;
+        this._type = _type;
+        this._distance = _distance;
+        this._time = _time;
+        this._date = _date;
+    }
+
+    public Exercise(String _name, String _type, double _distance, String _time, long _date) {
+        this._name = _name;
+        this._type = _type;
         this._distance = _distance;
         this._time = _time;
         this._date = _date;
@@ -72,14 +92,22 @@ public class Exercise {
         this._date = _date;
     }
 
-    public String format_date(){
-        DateHelper dateHelper = new DateHelper();
-        return dateHelper.getDate(getDate());
+    public String getType() {
+        return _type;
+    }
+
+    public void setType(String _type) {
+        this._type = _type;
+    }
+
+    public String formatDate(){
+
+        return DateHelper.getDate(getDate());
     }
 
     public double timeToHours(){
         String[] t = _time.split(":"); // h:min:secs to [h][min][secs]
-        double tt = 0.0;
+        double tt;
         if (t.length == 1){
             tt = Double.parseDouble(t[0])/(60 *60);
         }else if(t.length == 2){
@@ -93,7 +121,7 @@ public class Exercise {
     @Override
     public String toString(){
         //Todo Formatting
-        return (_name + " " + _time + " " + String.valueOf(_distance) + " " + format_date());
+        return (_name + " " + _time + " " + String.valueOf(_distance) + "\n " + _type + " "  + formatDate());
     }
 
 

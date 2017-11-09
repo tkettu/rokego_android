@@ -22,8 +22,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.teroki.interfaces.Constants;
 import com.teroki.rokego_helpers.NumericChecker;
 import com.teroki.rokego_helpers.PausableChronometer;
 

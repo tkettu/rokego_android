@@ -1,22 +1,15 @@
 package com.teroki.rokego_android;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.IBinder;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.teroki.interfaces.Constants;
 import com.teroki.rokego_helpers.PausableChronometer;
 
 
