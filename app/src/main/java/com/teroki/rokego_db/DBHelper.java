@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.teroki.rokego_objects.Exercise;
 
@@ -25,6 +26,8 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String SPORTS_COLUMN_DISTANCE = "distance";
     private static final String SPORTS_COLUMN_TIME = "time";
     private static final String SPORTS_COLUMN_DATE = "date";
+
+    private String LOG_TAG = "DBHelper";
     // NOTE https://stackoverflow.com/questions/7363112/best-way-to-work-with-dates-in-android-sqlite#comment18657781_7363557
 
     public DBHelper(Context context) {
@@ -129,11 +132,19 @@ public class DBHelper extends SQLiteOpenHelper {
                                        double minDist, double maxDist,
                                        String minTime, String maxTime){
 
+        //Array to (a[0],[a[1],...a[n],)
+        String names = "(";
+        int len = name.length;
+        for (int i = 0; i < len -1; i++) {
+            names += "'"+name[i]+"', ";
+        }
 
+        names += "'"+name[len-1]+"')";
+        Log.d(LOG_TAG, names);
         //SQLiteDatabase db = getReadableDatabase();
 
         String selectQuery = "SELECT * FROM " + SPORTS_TABLE_NAME + " WHERE " +
-                SPORTS_COLUMN_NAME + " IN " + name;
+                SPORTS_COLUMN_NAME + " IN " + names;
 
         return getExercisesFromQuery(selectQuery);
         //return null;

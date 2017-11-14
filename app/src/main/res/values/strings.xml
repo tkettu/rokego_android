@@ -98,6 +98,10 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_main2">Main2Activity</string>
+    <string name="label_name">Sport</string>
+    <string name="label_type">Type</string>
+    <string name="sport_name_hint">Name of sport</string>
+    <string name="sport_type_hint">Type of sport</string>
 
 
 </resources>

@@ -11,6 +11,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.teroki.interfaces.Filters;
 import com.teroki.rokego_db.DBHelper;
 import com.teroki.rokego_helpers.DateHelper;
 import com.teroki.rokego_helpers.StringHandler;
@@ -26,6 +27,8 @@ public class Exercises extends Activity /* extends ListActivity */{
     private DBHelper db;
 
     private String LOG_TAG = "Exercises";
+
+    private String name = "";
 
     public static final String EXERCISE_MSG = "com.teroki.rokego_android.EDIT_EXERCISE";
 
@@ -49,7 +52,22 @@ public class Exercises extends Activity /* extends ListActivity */{
         for (Exercise e: exes){
 
         }*/
-        List<Exercise> exesE = db.getExercises();
+        //List<Exercise> exesE = db.getExercises();
+        Intent intent = getIntent();
+        List<Exercise> exesE;
+        if (intent.getStringExtra(FilterActivity.NAME_MSG) != null){
+            name = intent.getStringExtra(FilterActivity.NAME_MSG);
+            String[] names = {name};
+            exesE = db.getExercises(names, null, null,
+                    Filters.EXERCISE_FILTERS.MIN_DISTANCE, Filters.EXERCISE_FILTERS.MAX_DISTANCE,
+                    null,null);
+        }else{
+            exesE = db.getExercises();
+        }
+        /*String[] sports = {"Running", "Walking"};
+        List<Exercise> exesE = db.getExercises(sports, null, null,
+                Filters.EXERCISE_FILTERS.MIN_DISTANCE, Filters.EXERCISE_FILTERS.MAX_DISTANCE,
+                null,null);*/
 
         setTotalTime(exesE);
         setTotalDistance(exesE);
@@ -77,9 +95,13 @@ public class Exercises extends Activity /* extends ListActivity */{
             @Override
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 
-                Exercise ex = (Exercise)adapter.getItemAtPosition(position);
+                /*Exercise ex = (Exercise)adapter.getItemAtPosition(position);
                 Intent intent = new Intent(Exercises.this, EditExercise.class);
                 intent.putExtra(EXERCISE_MSG, ex.getId());
+                startActivity(intent);*/
+
+                // Test
+                Intent intent = new Intent(Exercises.this, FilterActivity.class);
                 startActivity(intent);
 
             }
